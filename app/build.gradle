@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.ione.opustool"
+        minSdkVersion 14
+        targetSdkVersion 26
+
+        ndk {
+            moduleName "opus"    //生成的so名字
+            ldLibs "log", "z", "m"
+            abiFilters "armeabi", "armeabi-v7a", "x86"  //输出指定三种abi体系结构下的so库。目前可有可无。
+        }
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+        /*debug {
+            jniDebuggable true //此句不加在真机上 debug 不受影响，但是在虚拟机上不能 debug
+        }*/
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:26.0.0-beta1'
+    compile 'com.android.support:recyclerview-v7:26.0.0-beta1'
+}
