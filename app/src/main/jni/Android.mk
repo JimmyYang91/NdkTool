@@ -1,70 +1,32 @@
-#
-# Copyright 2009 Cedric Priscal
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+#LOCAL_PATH := $(call my-dir)
+#include $(CLEAR_VARS)
+#LOCAL_MODULE := TestNdk
+#LOCAL_SRC_FILES := com_ione_opustool_OpusTool.c
+#include $(BUILD_SHARED_LIBRARY)
 
-LOCAL_PATH := $(call my-dir)
-
+LOCAL_PATH := $(call my-dir)  #加载当前路径
 include $(CLEAR_VARS)
+include $(LOCAL_PATH)/celt_sources.mk   #加载celt 所有.c的 mk
+include $(LOCAL_PATH)/silk_sources.mk  #加载silk 所有.c 的mk
+include $(LOCAL_PATH)/opus_sources.mk #加载opus 所有.c 的mk
+MY_MODULE_DIR       := opus  #库的名称
+LOCAL_MODULE        := $(MY_MODULE_DIR)
+SILK_SOURCES += $(SILK_SOURCES_FIXED)
+#编译的源代码.c
+CELT_SOURCES += $(CELT_SOURCES_ARM)
+SILK_SOURCES += $(SILK_SOURCES_ARM)
+LOCAL_SRC_FILES     := NativeAudio.cpp $(CELT_SOURCES) $(SILK_SOURCES) $(OPUS_SOURCES)
 
-TARGET_PLATFORM := android-3
-LOCAL_LDLIBS :=-llog
-LOCAL_MODULE    := libWebRtcAudio
-LOCAL_SRC_FILES := WebRtcAudio.cpp
+#LOCAL_LDLIBS        := -lm –llog  #加载系统的库 日志库
 
-LOCAL_SRC_FILES += \
-    WebRtcMoudle/analog_agc.c \
-    WebRtcMoudle/complex_bit_reverse.c \
-    WebRtcMoudle/complex_fft.c \
-    WebRtcMoudle/copy_set_operations.c \
-    WebRtcMoudle/cross_correlation.c \
-    WebRtcMoudle/digital_agc.c \
-    WebRtcMoudle/division_operations.c \
-    WebRtcMoudle/dot_product_with_scale.c \
-    WebRtcMoudle/downsample_fast.c \
-    WebRtcMoudle/energy.c \
-    WebRtcMoudle/fft4g.c \
-    WebRtcMoudle/get_scaling_square.c \
-    WebRtcMoudle/min_max_operations.c \
-    WebRtcMoudle/noise_suppression.c \
-    WebRtcMoudle/noise_suppression_x.c \
-    WebRtcMoudle/ns_core.c \
-    WebRtcMoudle/nsx_core.c \
-    WebRtcMoudle/nsx_core_c.c \
-    WebRtcMoudle/nsx_core_neon_offsets.c \
-    WebRtcMoudle/real_fft.c \
-    WebRtcMoudle/resample_48khz.c \
-    WebRtcMoudle/resample_by_2.c \
-    WebRtcMoudle/resample_by_2_internal.c \
-    WebRtcMoudle/resample_by_2_mips.c \
-    WebRtcMoudle/resample.c \
-    WebRtcMoudle/resample_fractional.c \
-    WebRtcMoudle/ring_buffer.c \
-    WebRtcMoudle/spl_init.c \
-    WebRtcMoudle/splitting_filter.c \
-    WebRtcMoudle/spl_sqrt.c \
-    WebRtcMoudle/spl_sqrt_floor.c \
-    WebRtcMoudle/vector_scaling_operations.c
-
-LOCAL_SHARED_LIBRARIES := libcutils libutils libc 
-
-LOCAL_CFLAGS += -DWEBRTC_POSIX
-
-LOCAL_C_INCLUDES += \
-    WebRtcMoudle \
-    $(PV_INCLUDES) \
-    $(JNI_H_INCLUDE) \
-    $(call include-path-for, corecg graphics)
-
-include $(BUILD_SHARED_LIBRARY)
+LOCAL_C_INCLUDES    := \
+$(LOCAL_PATH)/include \
+$(LOCAL_PATH)/silk \
+$(LOCAL_PATH)/silk/fixed \
+$(LOCAL_PATH)/celt
+#附加编译选项
+LOCAL_CFLAGS        := -DNULL=0 -DSOCKLEN_T=socklen_t -DLOCALE_NOT_USED -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64
+LOCAL_CFLAGS        += -Drestrict='' -D__EMX__ -DOPUS_BUILD -DFIXED_POINT=1 -DDISABLE_FLOAT_API -DUSE_ALLOCA -DHAVE_LRINT -DHAVE_LRINTF -O3 -fno-math-errno
+LOCAL_CPPFLAGS      := -DBSD=1
+LOCAL_CPPFLAGS      += -ffast-math -O3 -funroll-loops
+include $(BUILD_SHARED_LIBRARY)  #编译动态库设置

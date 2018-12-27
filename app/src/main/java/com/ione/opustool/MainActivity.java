@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.e("hu","******1********");
-        int framsize = OpusJni.getInstance().OpusgetFrameSize();
+        int framsize = (int) OpusJni.getInstance().opusDecoderCreate(1233, 0);
         Log.e("hu","******2********framsize="+framsize);
         TextView tv_1 = (TextView)this.findViewById(R.id.tv_1);
         tv_1.setText("framsize:"+framsize);

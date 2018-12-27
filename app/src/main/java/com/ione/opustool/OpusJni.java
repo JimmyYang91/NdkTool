@@ -17,11 +17,19 @@ public class OpusJni
 
 	static
 	{
-		System.loadLibrary("newopus");
+		System.loadLibrary("opus");
 	}
-	public native int Opusopen(int complexity);  //complexity:8
-	public native int OpusgetFrameSize();
-	public native int Opusencode(short[] src, int offset, byte[] out, int size); // 压缩数据，长度为320short->40byte
-	public native int Opusdecode(byte[] src, short[] out, int size);// 解压缩数据，长度为40byte->320short
-	public native void Opusclose(); // 释放内存
+	// Decoder
+	public native long opusDecoderCreate(int sampleRate, int channels);
+	public native int opusDecodeFloat(long decoder, byte[] data, int length, float[] pcm, int frameSize, int decodeFec);
+	public native void opusDecoderDestroy(long decoder);
+	// Encoder
+	public native long opusEncoderCreate(int sampleRate, int channels, int application);
+	public native int opusEncoderCtl(long encoder, int request, int value);
+	public native int opusEncode(long encoder, short[] pcm, int frameSize, byte[] data, int maxBytes);
+	public native void opusEncoderDestroy(long encoder);
+	// General
+	public native int opusPacketGetFrames(byte[] data, int length);
+	public native int opusPacketGetSamplesPerFrame(byte[] data, int sampleRate);
+	public native int opusPacketGetChannels(byte[] data);
 }
